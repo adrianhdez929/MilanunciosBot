@@ -1,0 +1,18 @@
+{
+  "name": "MilanunciosBot",
+  "version": "0.0.1",
+  "author": "adrianhdez929",
+  "main": "index.js",
+  "bin": "bin.js",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "chrome-launcher": "^0.13.4",
+    "pkg": "^4.4.9",
+    "puppeteer-cluster": "^0.22.0",
+    "puppeteer-core": "^6.0.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
