@@ -1,23 +1,38 @@
 const fs = require('fs');
 const { Cluster } = require('puppeteer-cluster');
-const posts = require('./posts.conf');
-const axios = require('axios');
 const puppeteer = require('puppeteer-core');
 
+const generateRandom = () => {
+    const charMap = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let randomString = '';
+    for (let i = 0; i < 4; i++) {
+        randomString += charMap[Math.floor(Math.random() * items.length)];
+    }
+    return randomString;
+}
+
+const getPosts = () => {
+    const content = fs.readFileSync('posts.json');
+    const parse = JSON.parse(content)
+    let posts = [];
+    for (var key in parse) {
+        if (parse.hasOwnProperty(key)) {
+            var item = parse[key];
+            posts.push({
+                titulo: item.titulo,
+                descripcion: item.descripcion,
+                precio: item.precio,
+                nombre: item.nombre,
+                correo: item.correo,
+                telefono: item.telefono,
+            });            
+        }
+    }
+    return posts;
+};
 
 module.exports = (async () => {
-    
-    const formIds = [
-        '#titulo',
-        '#mapPlaceBox',
-        '#texto',
-        '#precio',
-        '#nombre',
-        '#email',
-        '#repemail',
-        '#telefono1',
-        '#photoUploader'
-    ];
+    let posts = getPosts();
 
     const provinces = [
         'Alava', 
@@ -82,7 +97,7 @@ module.exports = (async () => {
             executablePath: '/usr/bin/chromium', 
             headless: false, 
             defaultViewport: null,
-            args: ['--window-size=800,600']
+            args: ['--window-size=480,360']
         },
     });
 
@@ -116,7 +131,7 @@ module.exports = (async () => {
             });
         });
         
-        await page.type('#titulo', data.post.titulo);
+        await page.type('#titulo', data.post.titulo + ' ' + generateRandom());
         await page.type('#mapPlaceBox', data.province);
         await page.type('#texto', data.post.descripcion);
         await page.type('#precio', data.post.precio);
@@ -124,7 +139,9 @@ module.exports = (async () => {
         await page.type('#email', data.post.correo);
         await page.type('#repemail', data.post.correo);
         await page.type('#telefono1', data.post.telefono);
-        
+        await page.$eval('#acepto_condiciones_uso_y_politica_de_privacidad', el => el.click());
+        await page.$eval('input[type="image"]', el => el.click())
+
         await page.close();
     });
 
