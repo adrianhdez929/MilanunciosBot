@@ -1,13 +1,15 @@
 Para agregar un anuncio simplemente copia esta plantilla en el archivo posts.json en el directorio del programa, sustituyendo todo el contenido:
 
-{ 
-    "titulo": "prueba", 
-    "descripcion": "prueba", 
-    "precio": "1", 
-    "nombre": "prueba", 
-    "correo": "prueba@test.com",  
-    "telefono": "555555555"
-}
+[
+    { 
+        "titulo": "prueba", 
+        "descripcion": "prueba", 
+        "precio": "1", 
+        "nombre": "prueba", 
+        "correo": "prueba@test.com",  
+        "telefono": "555555555"
+    }
+]
 
 Para agregar 2 o mas anuncios, hacer el mismo proceso, pero con la plantilla de abajo:
 
@@ -33,6 +35,8 @@ Para agregar 2 o mas anuncios, hacer el mismo proceso, pero con la plantilla de 
 Para extender la plantilla anterior (agregar mas de 2 anuncios), simplemente agregar una coma ( , ) a la penultima llave, y luego agregar el contenido de la primera plantilla
 teniendo en cuenta de que el indice (numero inicial entre comillas dobles), sea distinto de alguno ya existente (yo recomiendo que sean numeros continuos, pero
 en realidad puede ser cualquier cadena de caracteres alfanumericos)
+
+NOTA: Asegurese de escribir una descripcion de mas de 15 caracteres o la pagina puede enviar una alerta sobre una descripcion demasiado pequeña y no aceptar el anuncio.
 
 NOTA: Tener siempre en cuenta que todos los valores esten dentro de comillas dobles, seguidos de una coma, excepto el ultimo elemento de cada anuncio 
 (fijarse en las plantillas, como luego de "telefono" no aparece una coma, pero en los campos anteriores si, igualmente con las ultimas llaves)
