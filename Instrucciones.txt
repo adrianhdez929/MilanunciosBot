@@ -43,3 +43,7 @@ NOTA: Tener siempre en cuenta que todos los valores esten dentro de comillas dob
 
 Para agregar fotos simplemente crear carpetas con nombre desde 1 hasta la cantidad de anuncios, por ejemplo, si tenemos 3 anuncios, creamos 3 carpetas en el directorio
 "images/" con los nombres 1, 2 y 3 respectivamente, luego copiar hacia cada una las respectivas fotos de cada anuncio.
+
+
+NOTA: Es necesario introducir la ruta hacia el ejecutable del navegador (solamente Google Chrome) en el archivo config.json, en el apartado del propio nombre y colocar la ruta
+entre las comillas dobles, sino el bot no podra determinar que navegador ejecutar. En caso de no tener Chrome instalado, por favor, descargarlo e instalarlo.

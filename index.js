@@ -2,6 +2,22 @@ const fs = require('fs');
 const { Cluster } = require('puppeteer-cluster');
 const puppeteer = require('puppeteer-core');
 
+const readConfig = () => {
+    const content = fs.readFileSync('config.json', 'utf-8');
+    const parse = JSON.parse(content);
+    let configs = [];
+    for (var key in parse) {
+        if (parse.hasOwnProperty(key)) {
+            var item = parse[key];
+            configs.push({               
+                browserPath : item.rutaDelNavegador,
+                maxConcurrency: item.cantidadDeVentanasMaxima,
+            });            
+        };
+    };
+    return configs;
+};
+
 const generateRandom = () => {
     const charMap = 'abcdefghijklmnopqrstuvwxyz0123456789';
     let randomString = '';
@@ -13,11 +29,11 @@ const generateRandom = () => {
 
 const getPosts = () => {
     const content = fs.readFileSync('posts.json', 'utf-8');
-    const parse = JSON.parse(content)
+    const parse = JSON.parse(content);
     let posts = [];
-    for (var key in parse) {
+    for (let key in parse) {
         if (parse.hasOwnProperty(key)) {
-            var item = parse[key];
+            let item = parse[key];
             posts.push({
                 titulo: item.titulo,
                 descripcion: item.descripcion,
@@ -26,8 +42,8 @@ const getPosts = () => {
                 correo: item.correo,
                 telefono: item.telefono,
             });            
-        }
-    }
+        };
+    };
     return posts;
 };
 
@@ -67,74 +83,75 @@ const typePostInfo = async (page, post, province) => {
     await page.$eval('input[type="image"]', el => el.click())
 };
 
-const submitPost = async (page) => {
-    
-};
+const provinces = [
+    'A Coruña',
+    'Álava',
+    'Albacete',
+    'Alicante',
+    'Almería',
+    'Asturias',
+    'Ávila',
+    'Badajoz',
+    'Baleares',
+    'Barcelona',
+    'Burgos',
+    'Cáceres',
+    'Cádiz',
+    'Cantabria',
+    'Castellón',
+    'Ceuta',
+    'Ciudad Real',
+    'Córdoba',
+    'Cuenca',
+    'Girona',
+    'Granada',
+    'Guadalajara',
+    'Guipúzcoa',
+    'Huelva',
+    'Huesca',
+    'Jaén',
+    'La Rioja',
+    'Las Palmas',
+    'León',
+    'Lleida',
+    'Lugo',
+    'Madrid',
+    'Málaga',
+    'Melilla',
+    'Murcia',
+    'Navarra',
+    'Ourense',
+    'Palencia',
+    'Pontevedra',
+    'Salamanca',
+    'Segovia',
+    'Sevilla',
+    'Soria',
+    'Tarragona',
+    'Tenerife',
+    'Teruel',
+    'Toledo',
+    'Valencia',
+    'Valladolid',
+    'Vizcaya',
+    'Zamora',
+    'Zaragoza'
+];
+
 
 module.exports = (async () => {
     let posts = getPosts();
+    let config = readConfig();
 
-    const provinces = [
-        'A Coruña',
-        'Álava',
-        'Albacete',
-        'Alicante',
-        'Almería',
-        'Asturias',
-        'Ávila',
-        'Badajoz',
-        'Baleares',
-        'Barcelona',
-        'Burgos',
-        'Cáceres',
-        'Cádiz',
-        'Cantabria',
-        'Castellón',
-        'Ceuta',
-        'Ciudad Real',
-        'Córdoba',
-        'Cuenca',
-        'Girona',
-        'Granada',
-        'Guadalajara',
-        'Guipúzcoa',
-        'Huelva',
-        'Huesca',
-        'Jaén',
-        'La Rioja',
-        'Las Palmas',
-        'León',
-        'Lleida',
-        'Lugo',
-        'Madrid',
-        'Málaga',
-        'Melilla',
-        'Murcia',
-        'Navarra',
-        'Ourense',
-        'Palencia',
-        'Pontevedra',
-        'Salamanca',
-        'Segovia',
-        'Sevilla',
-        'Soria',
-        'Tarragona',
-        'Tenerife',
-        'Teruel',
-        'Toledo',
-        'Valencia',
-        'Valladolid',
-        'Vizcaya',
-        'Zamora',
-        'Zaragoza'
-    ];
-
+    const browserPathConf = config[0].browserPath;
+    const maxConcurrencyConf = config[0].maxConcurrency;
+    
     const cluster = await Cluster.launch({
         concurrency: Cluster.CONCURRENCY_CONTEXT,
-        maxConcurrency: 1,
+        maxConcurrency: parseInt(maxConcurrencyConf),
         puppeteer: puppeteer,
         puppeteerOptions: {
-            executablePath: '/usr/bin/chromium', 
+            executablePath: browserPathConf, 
             headless: false, 
             defaultViewport: null,
             args: ['--window-size=480,360']
