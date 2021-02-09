@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { Cluster } = require('puppeteer-cluster');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 const readConfig = () => {
     const content = fs.readFileSync('config.json', 'utf-8');
@@ -72,7 +73,7 @@ const uploadPhoto = async (page, postIndex, imageDir, image, imgIndex) => {
 const typePostInfo = async (page, post, province) => {
     await page.type('#titulo', post.titulo + ' ' + generateRandom());
     await page.type('#mapPlaceBox', province);
-    await page.type('#texto', post.descripcion);
+    await page.type('#texto', post.descripcion + ' ' + generateRandom());
     await page.type('#precio', post.precio);
     await page.type('#nombre', post.nombre);
     await page.type('#email', post.correo);
@@ -139,6 +140,8 @@ const provinces = [
 
 
 module.exports = async () => {
+    puppeteer.use(StealthPlugin());
+
     let posts = getPosts();
     let config = readConfig();
 
@@ -173,6 +176,8 @@ module.exports = async () => {
         
         //await page.close();
         await page.waitForNavigation();
+        await page.solveRecaptchas();
+        await page.waitForNavigation();
     });
 
     try {
@@ -197,3 +202,5 @@ module.exports = async () => {
     await cluster.idle();
     await cluster.close();
  };
+
+ 
