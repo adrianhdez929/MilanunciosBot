@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { Cluster } = require('puppeteer-cluster');
-const puppeteer = require('puppeteer-extra');
+const vanillaPuppeteer = require('puppeteer');
+const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 const readConfig = () => {
@@ -140,6 +141,7 @@ const provinces = [
 
 
 module.exports = async () => {
+    const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(StealthPlugin());
 
     let posts = getPosts();
