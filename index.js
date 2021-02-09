@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { Cluster } = require('puppeteer-cluster');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 
 const readConfig = () => {
     const content = fs.readFileSync('config.json', 'utf-8');
@@ -10,7 +10,6 @@ const readConfig = () => {
         if (parse.hasOwnProperty(key)) {
             var item = parse[key];
             configs.push({               
-                browserPath : item.rutaDelNavegador,
                 maxConcurrency: item.cantidadDeVentanasMaxima,
             });            
         };
@@ -151,7 +150,6 @@ module.exports = async () => {
         maxConcurrency: parseInt(maxConcurrencyConf),
         puppeteer: puppeteer,
         puppeteerOptions: {
-            executablePath: browserPathConf, 
             headless: false, 
             defaultViewport: null,
             args: ['--window-size=480,360']

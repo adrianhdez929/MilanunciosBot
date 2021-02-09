@@ -1,6 +1,5 @@
 [
     {
-        "rutaDelNavegador": "/usr/bin/chromium",
         "cantidadDeVentanasMaxima": "5"
     }
 ]
