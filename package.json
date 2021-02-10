@@ -10,10 +10,10 @@
     "chrome-launcher": "^0.13.4",
     "pkg": "^4.4.9",
     "puppeteer-cluster": "^0.22.0",
+    "puppeteer": "^6.0.0",
     "puppeteer-core": "^6.0.0",
     "puppeteer-extra": "^3.1.16",
-    "puppeteer-extra-plugin-stealth": "^2.7.4",
-    "puppeteer": "^6.0.0"
+    "puppeteer-extra-plugin-stealth": "^2.7.4"
   },
   "scripts": {
     "start": "node bin.js"
