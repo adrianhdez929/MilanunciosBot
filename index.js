@@ -1,7 +1,11 @@
 const fs = require('fs');
 const chromeLauncher = require('chrome-launcher');
 const { Cluster } = require('puppeteer-cluster');
+<<<<<<< HEAD
 const vanillaPuppeteer = require('puppeteer-core');
+=======
+const vanillaPuppeteer = require('puppeteer');
+>>>>>>> 0438590580b821a2c68836b89b73f05dad825daa
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
@@ -143,7 +147,10 @@ const provinces = [
 
 
 module.exports = async () => {
+<<<<<<< HEAD
     const chrome = await chromeLauncher.launch();
+=======
+>>>>>>> 0438590580b821a2c68836b89b73f05dad825daa
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(StealthPlugin());
 
