@@ -1,8 +1,10 @@
 const fs = require('fs');
+const chromeLauncher = require('chrome-launcher');
 const { Cluster } = require('puppeteer-cluster');
 const vanillaPuppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
 
 const readConfig = () => {
     const content = fs.readFileSync('config.json', 'utf-8');
@@ -141,6 +143,7 @@ const provinces = [
 
 
 module.exports = async () => {
+    const chrome = await chromeLauncher.launch();
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(StealthPlugin());
 
@@ -185,11 +188,6 @@ module.exports = async () => {
     try {
         posts.map(async (post, postIndex) => {
             provinces.forEach(async (province) => {
-                /* cluster.queue({
-                    post: post,
-                    province: province,
-                    postIndex: postIndex,
-                }); */
                 await cluster.execute({
                     post: post,
                     province: province,
