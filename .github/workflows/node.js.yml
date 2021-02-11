@@ -26,7 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install yarn
-    - run: yarn ci
+    - run: yarn install
     - run: yarn build --if-present    
     #- name: Upload a Build Artifact
     #  uses: actions/upload-artifact@v2.2.2
