@@ -25,13 +25,13 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
     - run: npm install yarn
+    - run: yarn ci
     - run: yarn build --if-present    
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2.2.2
-      with:
-        name: MilanunciosBot
-        path: /
+    #- name: Upload a Build Artifact
+    #  uses: actions/upload-artifact@v2.2.2
+    #  with:
+    #    name: MilanunciosBot
+    #    path: /
       
       
