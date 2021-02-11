@@ -146,7 +146,7 @@ module.exports = async () => {
     const chrome = await chromeLauncher.launch();
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(StealthPlugin());
-
+    
     let posts = getPosts();
     let config = readConfig();
 
@@ -165,8 +165,8 @@ module.exports = async () => {
     });
 
     await cluster.task(async ({page, data: data}) => {
-        await page.setDefaultNavigationTimeout(0);
-        await page.setDefaultTimeout(0);
+        page.setDefaultNavigationTimeout(0);
+        page.setDefaultTimeout(0);
         await page.goto('https://www.milanuncios.com/textos-del-anuncio/?c=1380&m=1');
         const imageDir = 'images/';
         imageDirData = await fs.readdir(imageDir + (++data.postIndex).toString() + '/', (err, imageData) => {
@@ -202,5 +202,4 @@ module.exports = async () => {
     await cluster.idle();
     await cluster.close();
  };
-
  
