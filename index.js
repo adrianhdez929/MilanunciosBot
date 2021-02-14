@@ -7,6 +7,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { connect } = require('http2');
 
 
+
 const readConfig = () => {
     const content = fs.readFileSync('config.json', 'utf-8');
     const parse = JSON.parse(content);
@@ -152,6 +153,7 @@ const provinces = [
 
 
 module.exports = async () => {
+    const chrome = await chromeLauncher.launch();
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(StealthPlugin());
     
@@ -251,4 +253,3 @@ module.exports = async () => {
     await cluster.idle();
     await cluster.close();
 };
- 
