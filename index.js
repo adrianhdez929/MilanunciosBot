@@ -1,9 +1,10 @@
 const fs = require('fs');
 const chromeLauncher = require('chrome-launcher');
 const { Cluster } = require('puppeteer-cluster');
-const vanillaPuppeteer = require('puppeteer');
+const vanillaPuppeteer = require('puppeteer-core');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const { connect } = require('http2');
 
 
 const readConfig = () => {
@@ -73,6 +74,14 @@ const uploadPhoto = async (page, postIndex, imageDir, image, imgIndex) => {
     await fileInput.uploadFile(filePath);
 };
 
+const uploadPhotoNew = async (page, postIndex, imageDir, image) => {
+    const fileInputIdentifier = 'input[type=file]';
+    const dropZoneSelector = ".dropzone";
+    const filePath = imageDir + postIndex + '/' + image;
+    const fileInput = await page.$(`#${fileInputIdentifier}`);
+    await fileInput.uploadFile(filePath);
+};
+
 const typePostInfo = async (page, post, province) => {
     await page.type('#titulo', post.titulo + ' ' + generateRandom());
     await page.type('#mapPlaceBox', province);
@@ -87,58 +96,58 @@ const typePostInfo = async (page, post, province) => {
 };
 
 const provinces = [
-    'A Coruña',
-    'Álava',
-    'Albacete',
-    'Alicante',
-    'Almería',
-    'Asturias',
-    'Ávila',
-    'Badajoz',
-    'Baleares',
-    'Barcelona',
-    'Burgos',
-    'Cáceres',
-    'Cádiz',
-    'Cantabria',
-    'Castellón',
-    'Ceuta',
-    'Ciudad Real',
-    'Córdoba',
-    'Cuenca',
-    'Girona',
-    'Granada',
-    'Guadalajara',
-    'Guipúzcoa',
-    'Huelva',
-    'Huesca',
-    'Jaén',
-    'La Rioja',
-    'Las Palmas',
-    'León',
-    'Lleida',
-    'Lugo',
-    'Madrid',
-    'Málaga',
-    'Melilla',
-    'Murcia',
-    'Navarra',
-    'Ourense',
-    'Palencia',
-    'Pontevedra',
-    'Salamanca',
-    'Segovia',
-    'Sevilla',
-    'Soria',
-    'Tarragona',
-    'Tenerife',
-    'Teruel',
-    'Toledo',
-    'Valencia',
-    'Valladolid',
-    'Vizcaya',
-    'Zamora',
-    'Zaragoza'
+    ['A Coruña', 'A Coruña'],
+    ['Álava', 'Abecia'],
+    ['Albacete', 'Abejuela'],
+    ['Alicante', 'Abdet'],
+    ['Almería', 'Abla'],
+    ['Asturias', 'Aballe'],
+    ['Ávila', 'Adanero'],
+    ['Badajoz', 'Achero'],
+    ['Baleares', 'Alaro'],
+    ['Barcelona', 'Barcelona'],
+    ['Burgos', 'Ages'],
+    ['Cáceres', 'Abadia'],
+    ['Cádiz', 'Ahumada'],
+    ['Cantabria', 'Acereda'],
+    ['Castellón', 'Artana'],
+    ['Ceuta', 'Ceuta'],
+    ['Ciudad Real', 'Agudo'],
+    ['Córdoba', 'Adamuz'],
+    ['Cuenca', 'Cuenca'],
+    ['Girona', 'Girona / Gerona'],
+    ['Granada', 'Granada'],
+    ['Guadalajara', 'Guadalajara'],
+    ['Guipúzcoa', 'Gudamendi'],
+    ['Huelva', 'Cartaya'],
+    ['Huesca', 'Bara'],
+    ['Jaén', 'Jaén'],
+    ['La Rioja', 'Leiva'],
+    ['Las Palmas', 'Agualatente'],
+    ['León', 'León'],
+    ['Lleida', 'Benes'],
+    ['Lugo', 'Bagude'],
+    ['Madrid', 'Barajas'],
+    ['Málaga', 'Arriate'],
+    ['Melilla', 'Melilla'],
+    ['Murcia', 'Murcia'],
+    ['Navarra', 'Navaz'],
+    ['Ourense', 'Ouriz'],
+    ['Palencia', 'Palencia'],
+    ['Pontevedra', 'Pontevedra'],
+    ['Salamanca', 'Salamanca'],
+    ['Segovia', 'Segovia'],
+    ['Sevilla', 'Sevilla'],
+    ['Soria', 'San Andres de Soria'],
+    ['Tarragona', 'Tarragona'],
+    ['Tenerife', 'Teneguia'],
+    ['Teruel', 'Teruel'],
+    ['Toledo', 'Toledo'],
+    ['Valencia', 'Valencia'],
+    ['Valladolid', 'Valladolid'],
+    ['Vizcaya', 'Villaro'],
+    ['Zamora', 'Zamora'],
+    ['Zaragoza', 'Zaragoza']
 ];
 
 
@@ -157,48 +166,89 @@ module.exports = async () => {
         maxConcurrency: parseInt(maxConcurrencyConf),
         puppeteer: puppeteer,
         puppeteerOptions: {
+            executablePath: '/usr/bin/chromium',
             headless: false, 
             defaultViewport: null,
-            args: ['--window-size=480,360']
+            args: ['--window-size=800,600']
         },
     });
 
     await cluster.task(async ({page, data: data}) => {
+        const imageDir = 'images/';
         page.setDefaultNavigationTimeout(0);
         page.setDefaultTimeout(0);
-        await page.goto('https://www.milanuncios.com/textos-del-anuncio/?c=1380&m=1');
-        const imageDir = 'images/';
+        await page.goto('https://www.milanuncios.com/publicar-anuncios-gratis/formulario?c=15');
+
+        try {
+            const cookieButton = await page.$('button[data-testid=TcfAccept]');
+            await cookieButton.click();
+        } catch (err) {
+            console.log(err);
+        }
+
+        const radio = await page.waitForSelector('#s');
+        await radio.click();
+        const province = await page.waitForSelector('#province');
+        await province.click();
+        await province.type('Madrid');
+        await province.press('Enter');
+        await page.waitForTimeout(3000)
+        const municipality = await page.waitForSelector('#municipality');
+        await municipality.click();
+        await municipality.type('Madrid');
+        await municipality.press('Enter');
+
+        await page.type('#title', 'Prueba');
+        await page.type('#description', 'Prueba pruebita pruebotaaaaaa XD looooooooooooooooooool');
+        await page.type('#price', '1');
+        await page.type('#name', 'Pepe el cojo');
+        await page.type('#email', 'pepe@zmail.com');
+
+        await page.evaluate(selector => {
+            return document.querySelector(selector).click();
+        }, '#terms');
+
+        await page.waitForTimeout(500);
+
+        const submit = await page.$('button[type=submit]');
+        submit.click();
+
+        await page.waitForNavigation();
+
+        await page.waitForTimeout(500);
+
         imageDirData = await fs.readdir(imageDir + (++data.postIndex).toString() + '/', (err, imageData) => {
             imageData.map(async (image, imgIndex) => {
-                await uploadPhoto(page, data.postIndex, imageDir, image, imgIndex);
+                await uploadPhoto(page, data.postIndex, imageDir, image);
             });
         });
-        
-        await typePostInfo(page, data.post, data.province);
 
-        //submitPost(page);
-        
-        //await page.close();
+        await page.waitForTimeout(500);
+
+        const post = await page.$$('button[type=button]');
+        await post[post.length - 1].click();       
+
         await page.waitForNavigation();
-        await page.solveRecaptchas();
         await page.waitForNavigation();
     });
 
     try {
-        posts.map(async (post, postIndex) => {
+        while (true){
             provinces.forEach(async (province) => {
-                await cluster.execute({
-                    post: post,
-                    province: province,
-                    postIndex: postIndex,
+                posts.map(async (post, postIndex) => {
+                    await cluster.execute({
+                        post: post,
+                        province: province,
+                        postIndex: postIndex,
+                    });
                 });
             });
-        });
+        }
     } catch(err) {
         console.log(err);
     }
 
     await cluster.idle();
     await cluster.close();
- };
+};
  
