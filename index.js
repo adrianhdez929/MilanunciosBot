@@ -198,11 +198,12 @@ module.exports = async () => {
         await municipality.type('Madrid');
         await municipality.press('Enter');
 
-        await page.type('#title', 'Prueba');
-        await page.type('#description', 'Prueba pruebita pruebotaaaaaa XD looooooooooooooooooool');
-        await page.type('#price', '1');
-        await page.type('#name', 'Pepe el cojo');
-        await page.type('#email', 'pepe@zmail.com');
+        await page.type('#title', data.post.titulo + generateRandom());
+        await page.type('#description', data.post.descripcion + generateRandom());
+        await page.type('#price', data.post.precio);
+        await page.type('#name', data.post.nombre);
+        await page.type('#email', data.post.correo);
+        await page.type('#mainPhone', data.post.telefono);
 
         await page.evaluate(selector => {
             return document.querySelector(selector).click();
