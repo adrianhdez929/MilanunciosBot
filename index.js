@@ -4,7 +4,6 @@ const { Cluster } = require('puppeteer-cluster');
 const vanillaPuppeteer = require('puppeteer-core');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const { connect } = require('http2');
 
 
 const readConfig = () => {
@@ -152,6 +151,7 @@ const provinces = [
 
 
 module.exports = async () => {
+    const chrome = await chromeLauncher.launch();
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(StealthPlugin());
     
@@ -252,4 +252,3 @@ module.exports = async () => {
     await cluster.idle();
     await cluster.close();
 };
- 
