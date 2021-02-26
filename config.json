@@ -1,5 +1,6 @@
 [
     {
-        "cantidadDeVentanasMaxima": "1"
+        "cantidadDeVentanasMaxima": 1,
+        "browserPath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
     }
 ]

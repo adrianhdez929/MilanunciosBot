@@ -9,9 +9,9 @@ const readConfig = () => {
     const content = require('./config.json');
     let configs = [];
     for (let item of content) {
-        let { cantidadDeVentanasMaxima: maxConcurrency } = item; //alias para destructurar objeto
+        let { cantidadDeVentanasMaxima: maxConcurrency, browserPath } = item; //alias para destructurar objeto
         configs.push({
-            maxConcurrency
+            maxConcurrency: item.cantidadDeVentanasMaxima, browserPath
         });
     };
     return configs;
@@ -150,10 +150,10 @@ module.exports = async () => {
 
     const cluster = await Cluster.launch({
         concurrency: Cluster.CONCURRENCY_CONTEXT,
-        maxConcurrency: parseInt(maxConcurrencyConf),
+        maxConcurrency: maxConcurrencyConf,
         puppeteer: puppeteer,
         puppeteerOptions: {
-            executablePath: '/usr/bin/chromium',
+            executablePath: browserPathConf || '/usr/bin/chromium',
             headless: false,
             defaultViewport: null,
             args: ['--window-size=800,600']
