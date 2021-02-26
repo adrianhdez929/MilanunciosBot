@@ -5,18 +5,14 @@ const vanillaPuppeteer = require('puppeteer-core');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
-
 const readConfig = () => {
-    const content = fs.readFileSync('config.json', 'utf-8');
-    const parse = JSON.parse(content);
+    const content = require('./config.json');
     let configs = [];
-    for (var key in parse) {
-        if (parse.hasOwnProperty(key)) {
-            var item = parse[key];
-            configs.push({               
-                maxConcurrency: item.cantidadDeVentanasMaxima,
-            });            
-        };
+    for (let item of content) {
+        let { cantidadDeVentanasMaxima: maxConcurrency } = item; //alias para destructurar objeto
+        configs.push({
+            maxConcurrency
+        });
     };
     return configs;
 };
@@ -31,27 +27,18 @@ const generateRandom = () => {
 }
 
 const getPosts = () => {
-    const content = fs.readFileSync('posts.json', 'utf-8');
-    const parse = JSON.parse(content);
+    const content = require('./posts.json');
+
     let posts = [];
-    for (let key in parse) {
-        if (parse.hasOwnProperty(key)) {
-            let item = parse[key];
-            posts.push({
-                titulo: item.titulo,
-                descripcion: item.descripcion,
-                precio: item.precio,
-                nombre: item.nombre,
-                correo: item.correo,
-                telefono: item.telefono,
-            });            
-        };
+    for (let item of content) {
+        let { titulo, descripcion, precio, nombre, correo, telefono } = item;
+        posts.push({ titulo, descripcion, precio, nombre, correo, telefono });
     };
     return posts;
 };
 
 const uploadPhoto = async (page, postIndex, imageDir, image, imgIndex) => {
-    const fileInputIdentifier = "imageNumber_"+ imgIndex;
+    const fileInputIdentifier = "imageNumber_" + imgIndex;
     const dropZoneSelector = ".dropzone";
     const filePath = imageDir + postIndex + '/' + image;
     await page.evaluate((fileInputIdentifier, dropZoneSelector) => {
@@ -154,26 +141,26 @@ module.exports = async () => {
     const chrome = await chromeLauncher.launch();
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(StealthPlugin());
-    
+
     let posts = getPosts();
     let config = readConfig();
 
     const browserPathConf = config[0].browserPath;
     const maxConcurrencyConf = config[0].maxConcurrency;
-    
+
     const cluster = await Cluster.launch({
         concurrency: Cluster.CONCURRENCY_CONTEXT,
         maxConcurrency: parseInt(maxConcurrencyConf),
         puppeteer: puppeteer,
         puppeteerOptions: {
             executablePath: '/usr/bin/chromium',
-            headless: false, 
+            headless: false,
             defaultViewport: null,
             args: ['--window-size=800,600']
         },
     });
 
-    await cluster.task(async ({page, data: data}) => {
+    await cluster.task(async ({ page, data: data }) => {
         const imageDir = 'images/';
         page.setDefaultNavigationTimeout(0);
         page.setDefaultTimeout(0);
@@ -227,14 +214,14 @@ module.exports = async () => {
         await page.waitForTimeout(500);
 
         const post = await page.$$('button[type=button]');
-        await post[post.length - 1].click();       
+        await post[post.length - 1].click();
 
         await page.waitForNavigation();
         await page.waitForNavigation();
     });
 
     try {
-        while (true){
+        while (true) {
             provinces.forEach(async (province) => {
                 posts.map(async (post, postIndex) => {
                     await cluster.execute({
@@ -245,7 +232,7 @@ module.exports = async () => {
                 });
             });
         }
-    } catch(err) {
+    } catch (err) {
         console.log(err);
     }
 
